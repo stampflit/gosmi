@@ -97,3 +97,12 @@ func GetNodeByOID(oid types.Oid) (node SmiNode, err error) {
 	}
 	return CreateNode(smiNode), nil
 }
+
+func GetNodeByOIDWithIndex(oid types.Oid) (node SmiNode, index []types.SmiSubId, err error) {
+	smiNode, index := smi.GetNodeByOIDWithIndex(oid)
+	if smiNode == nil {
+		err = fmt.Errorf("Could not find node for OID %s", oid)
+		return
+	}
+	return CreateNode(smiNode), index, nil
+}

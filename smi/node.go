@@ -48,6 +48,25 @@ func GetNodeByOID(oid types.Oid) *types.SmiNode {
 	return nodePtr.FirstObject.GetSmiNode()
 }
 
+func GetNodeByOIDWithIndex(oid types.Oid) (*types.SmiNode, []types.SmiSubId) {
+	if len(oid) == 0 || internal.Root() == nil {
+		return nil, nil
+	}
+	var parentPtr, nodePtr *internal.Node = nil, internal.Root()
+	i := 0
+	for ; i < len(oid) && nodePtr != nil; i++ {
+		parentPtr, nodePtr = nodePtr, nodePtr.Children.Get(oid[i])
+	}
+	if nodePtr == nil {
+		nodePtr = parentPtr
+		i--
+	}
+	if nodePtr == nil || nodePtr.FirstObject == nil {
+		return nil, nil
+	}
+	return nodePtr.FirstObject.GetSmiNode(), oid[i:]
+}
+
 // SmiNode *smiGetFirstNode(SmiModule *smiModulePtr, SmiNodekind nodekind)
 func GetFirstNode(smiModulePtr *types.SmiModule, nodekind types.NodeKind) *types.SmiNode {
 	if smiModulePtr == nil {
